@@ -1,0 +1,28 @@
+name: CI
+
+# Run on every push (any branch) and on every pull request.
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # The runner starts empty: pull the repository onto it first.
+      - uses: actions/checkout@v7
+
+      # pyproject.toml requires Python >= 3.11.
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      # Pinned tool versions, so CI runs the same checks as every laptop.
+      - name: Install dev tools
+        run: pip install -r requirements-dev.txt
+
+      # Any failing test makes pytest exit non-zero, which turns the job red.
+      - name: Run tests
+        run: pytest
