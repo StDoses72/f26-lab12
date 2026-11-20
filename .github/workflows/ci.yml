@@ -5,6 +5,8 @@ on:
   push:
   pull_request:
 
+# Each check is its own job: jobs run in parallel on separate machines,
+# so one failing check never hides the result of another.
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -26,3 +28,51 @@ jobs:
       # Any failing test makes pytest exit non-zero, which turns the job red.
       - name: Run tests
         run: pytest
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Install dev tools
+        run: pip install -r requirements-dev.txt
+
+      # Rules are configured under [tool.ruff] in pyproject.toml.
+      - name: Lint with ruff
+        run: ruff check .
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Install dev tools
+        run: pip install -r requirements-dev.txt
+
+      # Checks the files listed under [tool.mypy] in pyproject.toml.
+      - name: Type-check with mypy
+        run: mypy
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Install dev tools
+        run: pip install -r requirements-dev.txt
+
+      # Checks the pinned runtime dependencies against published advisories.
+      - name: Audit dependencies with pip-audit
+        run: pip-audit -r requirements.txt
