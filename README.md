@@ -69,3 +69,7 @@ The suite passes as shipped. The Lab 12 handout tells you when to use the
 other three tools that `requirements-dev.txt` installs.
 
 See the Lab 12 handout on the course page for the milestones you show a TA.
+
+## AI usage
+
+Lab 12 was completed with Claude Code (model: Claude Opus 5.5), which wrote the CI workflow, the fixes, and the pull request description.
